@@ -1,13 +1,13 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-//Categories class will keep track of each category and the words in it
+//This class handles the categories and generates a random word
 public class Categories {
 
     //Arrays that will hold category words
-    ArrayList<String> c1 = new ArrayList<>();
-    ArrayList<String> c2 = new ArrayList<>();
-    ArrayList<String> c3 = new ArrayList<>();
+    ArrayList<String> c1;
+    ArrayList<String> c2;
+    ArrayList<String> c3;
 
     //Counters that keep track of amount of words chosen from category
     int c1_guesses;
@@ -15,13 +15,51 @@ public class Categories {
     int c3_guesses;
 
     Categories(){
+        c1 = new ArrayList<>();
+        c2 = new ArrayList<>();
+        c3 = new ArrayList<>();
+
         //Initialize counters to 0
         c1_guesses = 0;
         c2_guesses = 0;
         c3_guesses = 0;
 
-        //Populate category arrays
-        //TO DO
+        //Populate category1 array
+        c1.add("PIZZA");
+        c1.add("HOTDOG");
+        c1.add("SANDWICH");
+        c1.add("BURRITO");
+        c1.add("SOUP");
+        c1.add("PIE");
+        c1.add("APPLE");
+        c1.add("BANANA");
+        c1.add("ORANGE");
+        c1.add("WAFFLE");
+
+        //Populate category2 array
+        c2.add("SNAIL");
+        c2.add("CAT");
+        c2.add("COW");
+        c2.add("BAT");
+        c2.add("LION");
+        c2.add("MONKEY");
+        c2.add("SNAKE");
+        c2.add("SHARK");
+        c2.add("LIZARD");
+        c2.add("EAGLE");
+
+        //Populate category2 array
+        c3.add("ENGLAND");
+        c3.add("FRANCE");
+        c3.add("JAMAICA");
+        c3.add("BOLIVIA");
+        c3.add("AUSTRIA");
+        c3.add("URUGUAY");
+        c3.add("JAPAN");
+        c3.add("ETHIOPIA");
+        c3.add("ALGERIA");
+        c3.add("CYPRUS");
+
     }
 
     //Choose one word from c1 category

@@ -1,44 +1,38 @@
-
-
-
+import java.util.Arrays; 
 import java.util.ArrayList;
 
-// This class controls one round of the game 
+//This class handles every guess made in a round
 public class GuessingRound {
+    
     int guesses;    //Number of valid guesses during the round
     String word;    //The word needed to be guessed  
-    ArrayList<String> guessed_word;  //Array will store word that's guessed correctly and display to player
+    ArrayList<String> guessed_word;  //Array will keep track of correct letters guessed
+    ArrayList<String> word_arr;  //Array will store each letter of word to be guessed
 
     //Each round needs a word as an argument
     GuessingRound(String w){
         word = w;
         guesses = 6;
-        guessed_word = new ArrayList<>(word.length()); //initializing guessed_word array with length of word
+        guessed_word = new ArrayList<>(); //initializing empty guessed_word array
+        
+        //Storing word as array
+        String[] strSplit = word.split(""); 
+        word_arr = new ArrayList<String>(Arrays.asList(strSplit));
     }
 
     //Function to determine outcome each guess
-    int make_a_guess(char guess){
+    int make_a_guess(String guess){
         
         int c = 0; //frequency of guess appearing in the word
-        int i = 0; //index
 
         //Check guess
-        for(char l : word.toCharArray()){
-            if(guess == l){
+        for(int i=0; i<word_arr.size(); i++){
+            if(guess.equals(word_arr.get(i))){  //If guess matches a letter in the word
                 c++;
-                guessed_word.add(i, String.valueOf(l)); //Put letter in array to display to player
+                guessed_word.add(guess); //Put letter in guess_word array (order doesn't matter in this array)
             }
-            i++;
+           
         }
-
-        // Using a loop to concatenate the so far guessed word
-        StringBuilder result = new StringBuilder();
-        for (String str : guessed_word) {
-            result.append(str);
-        }
-        
-        // Convert StringBuilder to String
-        String wordString = result.toString();
 
         //If no letters matched the guess, amount of valid guesses decreases
         if(c==0){
@@ -47,11 +41,11 @@ public class GuessingRound {
             if(guesses == 0){   //When last guess happens -1 indicates lost round
                 return -1;
             }
-        }else if(wordString==word){ //Condition checks if word has been guessed
-            return 10;     //10 indicates correctly guessed word
+        } else if (guessed_word.size() == word_arr.size()) {    //if the guess_word array is same size as word_arr that means all letters where guessed correctly
+            return 10;  //10 indicates round is won
         }
 
-        return c;   //Returns the number of time the guessed letter appears in the word
+        return 1;   //Returns the number of time the guessed letter appears in the word
     }
     
 }
