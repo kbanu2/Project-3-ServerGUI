@@ -8,6 +8,7 @@ public class GameState implements Serializable {
     int words_guessed;
     String guess;
     boolean gameWon;
+    boolean gameOver;
     boolean roundWon;
 
     //ToDo: Implement serializableID data type

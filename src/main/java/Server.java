@@ -58,6 +58,20 @@ public class Server {
             connection = server;
             this.count = count;
         }
+
+        private int readCategory() throws Exception{
+            int category = (int) in.readObject();
+            callback.accept(category);
+
+            return category;
+        }
+
+        private String readGuess() throws Exception{
+            String guess = in.readObject().toString();
+            callback.accept("Client # " + " guessed: " + guess);
+
+            return guess;
+        }
         
         @Override
         public void run() {
@@ -70,28 +84,17 @@ public class Server {
                 callback.accept("Client #  " + " streams could not connect");
             }
 
-
             while (true){            
-                //I'm trying to accept a category from the client; I don't know if I'm doing it right
-                //This piece of code should be happening every time the client finds himself in the category scene
                 try{
-                    int cat = (int) in.readObject();
-                    callback.accept(cat);
-                    game.pick_from_category(cat);
-                }
-                catch (Exception e){
-                    callback.accept("Client # " + " disconnected");
-                    clientThreads.remove(this);
-                }
-                
-                try{
-                    String guess = in.readObject().toString();  //Taking object
-                    callback.accept("Client # " + " guessed: " + guess);
-                    makeGuess(guess);   
+                    game.pick_from_category(readCategory());
 
-                    out.writeObject(game_played);
-                    if(game_played.gameWon == true || game_played.gameWon == false){
-                        game_played = new GameState();
+                    while (!game_played.gameOver){ //FIXME: Add functionality to update if the game is over in gameOver
+                        makeGuess(readGuess());
+                        out.writeObject(game_played);
+
+                        if(game_played.gameWon == true || game_played.gameWon == false){ //Fixme:  These helper functions don't really belong here
+                            game_played = new GameState();
+                        }
                     }
                 }
                 catch (Exception e){
@@ -101,13 +104,13 @@ public class Server {
             }
         }
 
-        //Helper function that starts the game
+        //Helper function that starts the game //Fixme:  These helper functions don't really belong here
         public void startGame(){
           game = new GuessingGame();  
           game_played = new GameState();
         }
 
-        //Helper function that makes a guess
+        //Helper function that makes a guess //Fixme:  These helper functions do not belong here
         public void makeGuess(String guess){
             int g = game.play_round(guess); //makeing a guess on behalf of the client
             game_played.guess = guess;
@@ -132,7 +135,7 @@ public class Server {
                 //Checking which category has been played and if the game is over or if the player has additional attempts
         
                 //If category 1 has been played 3 times
-                if(game.categories.c1_guesses==3 || game.categories.c2_guesses==3 || game.categories.c2_guesses==3){
+                if(game.categories.c1_guesses==3 || game.categories.c2_guesses==3 || game.categories.c3_guesses==3){
                     game_played.gameWon = false;
                 }else{      //If player has more attempts left to play the game
                     game_played.roundWon = false;
