@@ -23,19 +23,13 @@ public class Server {
     }
 
     public class ServerThread extends Thread{
-        int count = 1;
-
         @Override
         public void run(){
-            callback.accept("server running");
             try (ServerSocket serverSocket = new ServerSocket(port);){
                 while (true){
-                    ClientThread clientThread = new ClientThread(serverSocket.accept(), count);
-                    callback.accept("Client # " + count + " has connected");
+                    ClientThread clientThread = new ClientThread(serverSocket.accept());
                     clientThreads.add(clientThread);
                     clientThread.start();
-
-                    count++;
                 }
             }
             catch(Exception e){
@@ -45,7 +39,7 @@ public class Server {
     }
 
     public class ClientThread extends Thread {
-        int count;
+        String username;
         GameState game_played;
         Socket connection;
         ObjectInputStream in;
@@ -53,22 +47,21 @@ public class Server {
         GuessingGame game; //Game instance
        
 
-        public ClientThread(Socket server, int count){
+        public ClientThread(Socket server){
             startGame();  //Initializing game once client connects to thread
             connection = server;
-            this.count = count;
         }
 
         private int readCategory() throws Exception{
             int category = (int) in.readObject();
-            callback.accept("Client # " + " is in category " + category);
+            callback.accept("Client '" + username + "' is in category " + category);
 
             return category;
         }
 
         private String readGuess() throws Exception{
             String guess = in.readObject().toString();
-            callback.accept("Client # " + " guessed: " + guess);
+            callback.accept("Client '" + username + "' guessed: " + guess);
 
             return guess;
         }
@@ -79,9 +72,11 @@ public class Server {
                 in = new ObjectInputStream(connection.getInputStream());
                 out = new ObjectOutputStream(connection.getOutputStream());
                 connection.setTcpNoDelay(true);
+                username = in.readObject().toString();
+                callback.accept("Client '" + username + "' has connected");
             }
             catch (Exception e){
-                callback.accept("Client #  " + " streams could not connect");
+                callback.accept("Client's streams could not connect");
             }
 
             while (true){            
@@ -98,7 +93,7 @@ public class Server {
                     }
                 }
                 catch (Exception e){
-                    callback.accept("Client # " + " disconnected");
+                    callback.accept("Client '" + username + "' disconnected");
                     clientThreads.remove(this);
                 }
             }
@@ -163,7 +158,6 @@ public class Server {
                     }
                     
                 }
-
             }
         }
     }
