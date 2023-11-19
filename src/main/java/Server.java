@@ -1,3 +1,5 @@
+import javafx.application.Platform;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -8,16 +10,16 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class Server {
-
     private final int port;
     private final ServerThread serverThread;
-    Consumer<Serializable> callback;
+    Controller callback;
     ArrayList<ClientThread> clientThreads;
 
-    public Server(Consumer<Serializable> callback, int port){
+    public Server(Controller callback, int port){
         this.callback = callback;
         this.port = port;
         serverThread = new ServerThread();
+        serverThread.start();
     }
 
     public class ServerThread extends Thread{
@@ -25,6 +27,7 @@ public class Server {
 
         @Override
         public void run(){
+            callback.accept("server running");
             try (ServerSocket serverSocket = new ServerSocket(port);){
                 while (true){
                     ClientThread clientThread = new ClientThread(serverSocket.accept(), count);
@@ -42,9 +45,6 @@ public class Server {
     }
 
     public class ClientThread extends Thread {
-
-        Map<String, ArrayList<String>> categories;
-        ArrayList<Integer> numAttempts;
         int count;
         GameState game_played;
         Socket connection;
@@ -61,7 +61,7 @@ public class Server {
 
         private int readCategory() throws Exception{
             int category = (int) in.readObject();
-            callback.accept(category);
+            callback.accept("Client # " + " is in category " + category);
 
             return category;
         }
