@@ -51,6 +51,7 @@ public class Server {
         ObjectInputStream in;
         ObjectOutputStream out;
         GuessingGame game; //Game instance
+       
 
         public ClientThread(Socket server, int count){
             startGame();  //Initializing game once client connects to thread
@@ -69,7 +70,20 @@ public class Server {
                 callback.accept("Client #  " + " streams could not connect");
             }
 
-            while (true){
+
+            while (true){            
+                //I'm trying to accept a category from the client; I don't know if I'm doing it right
+                //This piece of code should be happening every time the client finds himself in the category scene
+                try{
+                    int cat = (int) in.readObject();
+                    callback.accept(cat);
+                    game.pick_from_category(cat);
+                }
+                catch (Exception e){
+                    callback.accept("Client # " + " disconnected");
+                    clientThreads.remove(this);
+                }
+                
                 try{
                     String guess = in.readObject().toString();  //Taking object
                     callback.accept("Client # " + " guessed: " + guess);
