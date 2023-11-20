@@ -87,7 +87,7 @@ public class Server {
                         makeGuess(readGuess());
                         out.writeObject(game_played);
 
-                        if(game_played.gameWon == true || game_played.gameWon == false){ //Fixme:  These helper functions don't really belong here
+                        if(game_played.gameWon == true || game_played.gameWon == false){ //Fixme:  Isn't this condition always true?
                             game_played = new GameState();
                         }
                     }
