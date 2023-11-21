@@ -2,6 +2,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class GameState implements Serializable {
+    private static final long serialVersionUID = 1234567L;
     ArrayList<String> word;
     int length;
     int round_outcome;
@@ -15,6 +16,4 @@ public class GameState implements Serializable {
     int gameWon = 0;
     int gameOver = 0;
     int roundWon = 0;
-
-    //ToDo: Implement serializableID data type
 }
