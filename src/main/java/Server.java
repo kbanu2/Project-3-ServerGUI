@@ -82,10 +82,13 @@ public class Server {
                     game.pick_from_category(readCategory());
                     game_played.word = new ArrayList<>(game.round.word_arr.size());
                     game_played.length = game.round.word_arr.size();
-
+                    out.writeObject(game_played);
+                   
                     while (game_played.gameOver!=1){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
+                        
                         out.writeObject(game_played);
+                        
 
                         if(game_played.gameWon == 1 || game_played.gameWon == -1){ //Fixme:  Isn't this condition always true?
                             game_played = new GameState();
