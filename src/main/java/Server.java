@@ -82,12 +82,14 @@ public class Server {
             while (true){            
                 try{
                     game.pick_from_category(readCategory());
+                    game_played.word = new ArrayList<>(game.round.word_arr.size());
+                    game_played.length = game.round.word_arr.size();
 
-                    while (!game_played.gameOver){ //FIXME: Add functionality to update if the game is over in gameOver
+                    while (game_played.gameOver!=1){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
                         out.writeObject(game_played);
 
-                        if(game_played.gameWon == true || game_played.gameWon == false){ //Fixme:  Isn't this condition always true?
+                        if(game_played.gameWon == 1 || game_played.gameWon == -1){ //Fixme:  Isn't this condition always true?
                             game_played = new GameState();
                         }
                     }
@@ -117,8 +119,7 @@ public class Server {
                 //Check if it is a hit or a miss and update label
                 for(int i=0; i<game.round.word_arr.size(); i++){
                     if(guess.equals(game.round.word_arr.get(i))){
-                        game_played.roundWon = true;
-                        game_played.index_of_guess = i;
+                        game_played.word.add(i, guess);
                     }
                 }
 
@@ -131,30 +132,35 @@ public class Server {
         
                 //If category 1 has been played 3 times
                 if(game.categories.c1_guesses==3 || game.categories.c2_guesses==3 || game.categories.c3_guesses==3){
-                    game_played.gameWon = false;
+                    game_played.gameWon = -1;
                 }else{      //If player has more attempts left to play the game
-                    game_played.roundWon = false;
+                    game_played.roundWon = -1;
                 }
 
             }else{  //Guessed the word
                 game_played.words_guessed = game.words_guessed;
+                for(int i=0; i<game.round.word_arr.size(); i++){
+                    if(guess.equals(game.round.word_arr.get(i))){
+                        game_played.word.add(i, guess);
+                    }
+                }
                 
                 if(game.words_guessed==3){
-                    game_played.gameWon = true;
+                    game_played.gameWon = 1;
                 }else{
-                    game_played.roundWon = true;    
+                    game_played.roundWon = 1;    
                     
                     //If a round has been won check to see which category cannot be played anymore
                     if(game.category_track.get(0)==0){
-                        game_played.category = 1;
+                        game_played.category1 = 1;
                     }
                     
                     if(game.category_track.get(1)==0){
-                        game_played.category = 2;
+                        game_played.category2 = 1;
                     }
             
                     if(game.category_track.get(2)==0){
-                        game_played.category = 3;
+                        game_played.category3 = 1;
                     }
                     
                 }
