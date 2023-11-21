@@ -1,5 +1,4 @@
-import javafx.application.Platform;
-
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -10,10 +9,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class Server {
-    private final int port;
-    private final ServerThread serverThread;
+    int port;
+    ServerThread serverThread;
     Controller callback;
-    ArrayList<ClientThread> clientThreads;
 
     public Server(Controller callback, int port){
         this.callback = callback;
@@ -23,16 +21,15 @@ public class Server {
     }
 
     public class ServerThread extends Thread{
-        @Override
         public void run(){
-            try (ServerSocket serverSocket = new ServerSocket(port);){
+            try(ServerSocket serverSocket = new ServerSocket(port);){
                 while (true){
                     ClientThread clientThread = new ClientThread(serverSocket.accept());
-                    clientThreads.add(clientThread);
                     clientThread.start();
                 }
             }
             catch(Exception e){
+                System.out.println(e.getMessage());
                 callback.accept("Server did not launch");
             }
         }
@@ -48,8 +45,8 @@ public class Server {
        
 
         public ClientThread(Socket server){
+            this.connection = server;
             startGame();  //Initializing game once client connects to thread
-            connection = server;
         }
 
         private int readCategory() throws Exception{
@@ -66,21 +63,22 @@ public class Server {
             return guess;
         }
         
-        @Override
         public void run() {
             try{
                 in = new ObjectInputStream(connection.getInputStream());
                 out = new ObjectOutputStream(connection.getOutputStream());
                 connection.setTcpNoDelay(true);
+
                 username = in.readObject().toString();
-                callback.accept("Client '" + username + "' has connected");
+                callback.accept("Client '" + username + "' connected to the server");
             }
             catch (Exception e){
+                System.out.println(e.getMessage());
                 callback.accept("Client's streams could not connect");
             }
 
-            while (true){            
-                try{
+            try {
+                while (true){
                     game.pick_from_category(readCategory());
                     game_played.word = new ArrayList<>(game.round.word_arr.size());
                     game_played.length = game.round.word_arr.size();
@@ -94,10 +92,9 @@ public class Server {
                         }
                     }
                 }
-                catch (Exception e){
-                    callback.accept("Client '" + username + "' disconnected");
-                    clientThreads.remove(this);
-                }
+            }
+            catch (Exception e){
+                callback.accept("Client '" + username + "' disconnected from the server");
             }
         }
 
