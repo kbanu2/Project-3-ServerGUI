@@ -23,6 +23,7 @@ public class Server {
     public class ServerThread extends Thread{
         public void run(){
             try(ServerSocket serverSocket = new ServerSocket(port);){
+                callback.accept("Server is running on port: " + port);
                 while (true){
                     ClientThread clientThread = new ClientThread(serverSocket.accept());
                     clientThread.start();
@@ -87,21 +88,21 @@ public class Server {
                         game_played.word.add(i, "_");
                     }
                     game_played.guesses_left = game.round.guesses;
+
+                    out.reset();
                     out.writeObject(game_played);
-        
-                   
+
+
                     while (game_played.gameWon != 1 && game_played.gameWon != -1 && game_played.roundWon != 1 && game_played.roundWon != -1){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
                         System.out.println("sending GUESSES: " +game_played.guesses_left);
                         System.out.println("sending LENGTH: " +game_played.length);
                         System.out.println("sending WON/LOST: " +game_played.roundWon);
-                        // GameState new_state = new GameState(game_played);
-                
+
                         out.reset();
                         out.writeObject(game_played);
-
                     }
-                    //game_played = new GameState();
+                    game_played = new GameState();
                 }
             }
             catch (Exception e){
@@ -112,7 +113,7 @@ public class Server {
 
         //Helper function that starts the game //Fixme:  These helper functions don't really belong here
         public void startGame(){
-          game = new GuessingGame();  
+          game = new GuessingGame();
           game_played = new GameState();
         }
 
