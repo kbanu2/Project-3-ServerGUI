@@ -84,13 +84,13 @@ public class Server {
                     System.out.println("WORD: " + game.round.word);
                     game_played.length = game.round.word_arr.size();
                     for(int i=0; i<game.round.word_arr.size(); i++){
-                        game_played.word.add(i, " ");
+                        game_played.word.add(i, "_");
                     }
                     game_played.guesses_left = game.round.guesses;
                     out.writeObject(game_played);
         
                    
-                    while (true){ //FIXME: Add functionality to update if the game is over in gameOver
+                    while (game_played.gameWon != 1 && game_played.gameWon != -1 && game_played.roundWon != 1 && game_played.roundWon != -1){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
                         System.out.println("sending GUESSES: " +game_played.guesses_left);
                         System.out.println("sending LENGTH: " +game_played.length);
@@ -99,17 +99,13 @@ public class Server {
                 
                         out.reset();
                         out.writeObject(game_played);
-                        
-                        
 
-                        if(game_played.gameWon == 1 || game_played.gameWon == -1){ //Fixme:  Isn't this condition always true?
-                            game_played = new GameState();
-                            break;
-                        }
                     }
+                    //game_played = new GameState();
                 }
             }
             catch (Exception e){
+                e.printStackTrace();
                 callback.accept("Client '" + username + "' disconnected from the server");
             }
         }
@@ -133,9 +129,9 @@ public class Server {
                 //Check if it is a hit or a miss and update label
                 for(int i=0; i<game.round.word_arr.size(); i++){
                     if(guess.equals(game.round.word_arr.get(i))){
-                        game_played.word.add(i, guess);
+                        game_played.word.set(i, guess);
                         for(String s:game_played.word){
-                            System.out.print(s+" ");
+                            System.out.print(s);
                         }
                         System.out.println();
                     }
@@ -160,7 +156,11 @@ public class Server {
                 game_played.words_guessed = game.words_guessed;
                 for(int i=0; i<game.round.word_arr.size(); i++){
                     if(guess.equals(game.round.word_arr.get(i))){
-                        game_played.word.add(i, guess);
+                        game_played.word.set(i, guess);
+                        for(String s:game_played.word){
+                            System.out.print(s);
+                        }
+                        System.out.println();
                     }
                 }
                 
