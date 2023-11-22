@@ -93,37 +93,35 @@ public class Server {
                     out.writeObject(game_played);
 
 
-                    while (game_played.gameWon != 1 && game_played.gameWon != -1 && game_played.roundWon != 1 && game_played.roundWon != -1){ //FIXME: Add functionality to update if the game is over in gameOver
+                    while (game_played.gameWon != 1 && game_played.gameWon != -1 && game_played.roundWon != 1 && game_played.roundWon != -1){
                         makeGuess(readGuess());
-                        System.out.println("sending GUESSES: " +game_played.guesses_left);
-                        System.out.println("sending LENGTH: " +game_played.length);
-                        System.out.println("sending WON/LOST: " +game_played.roundWon);
 
                         out.reset();
                         out.writeObject(game_played);
                     }
+
+                    if (game_played.gameWon == 1 || game_played.gameWon == -1){
+                        game = new GuessingGame();
+                    }
+
                     game_played = new GameState();
                 }
             }
             catch (Exception e){
-                e.printStackTrace();
                 callback.accept("Client '" + username + "' disconnected from the server");
             }
         }
 
-        //Helper function that starts the game //Fixme:  These helper functions don't really belong here
         public void startGame(){
           game = new GuessingGame();
           game_played = new GameState();
         }
 
-        //Helper function that makes a guess //Fixme:  These helper functions do not belong here
         public void makeGuess(String guess){
             int g = game.play_round(guess); //makeing a guess on behalf of the client
             game_played.guess = guess;
             game_played.round_outcome = g;
 
-            System.out.println("GUESS OUTCOME: " + g);
             //When a guess has been made
             if(g==1){   //Valid guess 
 
@@ -182,7 +180,6 @@ public class Server {
                     if(game.category_track.get(2)==0){
                         game_played.category3 = 1;
                     }
-                    
                 }
             }
         }
