@@ -93,7 +93,7 @@ public class Server {
                     out.writeObject(game_played);
 
 
-                    while (game_played.gameWon != 1 && game_played.gameWon != -1 && game_played.roundWon != 1 && game_played.roundWon != -1){ //FIXME: Add functionality to update if the game is over in gameOver
+                    while (game_played.roundWon != 1 && game_played.roundWon != -1){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
                         System.out.println("sending GUESSES: " +game_played.guesses_left);
                         System.out.println("sending LENGTH: " +game_played.length);
@@ -102,7 +102,13 @@ public class Server {
                         out.reset();
                         out.writeObject(game_played);
                     }
-                    game_played = new GameState();
+                    game_played.roundWon = 0;
+                    if(game_played.gameWon == 1 || game_played.gameWon == -1){
+                        System.out.println("OLD: "+ game_played.guesses_left);
+                        game = new GuessingGame();
+                        game_played = new GameState();
+                        System.out.println("NEW: "+ game_played.guesses_left);
+                    }
                 }
             }
             catch (Exception e){
@@ -149,6 +155,7 @@ public class Server {
                 //If category 1 has been played 3 times
                 if(game.categories.c1_guesses==3 || game.categories.c2_guesses==3 || game.categories.c3_guesses==3){
                     game_played.gameWon = -1;
+                    game_played.roundWon = -1;
                 }else{      //If player has more attempts left to play the game
                     game_played.roundWon = -1;
                 }
@@ -166,7 +173,9 @@ public class Server {
                 }
                 
                 if(game.words_guessed==3){
+                    System.out.print("GME SET\n");
                     game_played.gameWon = 1;
+                    game_played.roundWon = 1; 
                 }else{
                     game_played.roundWon = 1;    
                     
