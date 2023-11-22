@@ -16,4 +16,24 @@ public class GameState implements Serializable {
     int gameWon = 0;
     int gameOver = 0;
     int roundWon = 0;
+
+    public GameState(){
+
+    }
+
+    public GameState(GameState state){
+        this.word = state.word;
+        this.length = state.length;
+        this.round_outcome = state.round_outcome;
+        this.index_of_guess = state.index_of_guess;
+        this.category1 = state.category1;
+        this.category2 = state.category2;
+        this.category3 = state.category3;
+        this.guesses_left = state.guesses_left;
+        this.words_guessed = state.words_guessed;
+        this.guess = state.guess;
+        this.gameWon = state.gameWon;
+        this.gameOver = state.gameOver;
+        this.roundWon = state.roundWon;
+    }
 }
