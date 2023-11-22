@@ -81,17 +81,30 @@ public class Server {
                 while (true){
                     game.pick_from_category(readCategory());
                     game_played.word = new ArrayList<>(game.round.word_arr.size());
+                    System.out.println("WORD: " + game.round.word);
                     game_played.length = game.round.word_arr.size();
+                    for(int i=0; i<game.round.word_arr.size(); i++){
+                        game_played.word.add(i, " ");
+                    }
+                    game_played.guesses_left = game.round.guesses;
                     out.writeObject(game_played);
+        
                    
-                    while (game_played.gameOver!=1){ //FIXME: Add functionality to update if the game is over in gameOver
+                    while (true){ //FIXME: Add functionality to update if the game is over in gameOver
                         makeGuess(readGuess());
-                        
+                        System.out.println("sending GUESSES: " +game_played.guesses_left);
+                        System.out.println("sending LENGTH: " +game_played.length);
+                        System.out.println("sending WON/LOST: " +game_played.roundWon);
+                        // GameState new_state = new GameState(game_played);
+                
+                        out.reset();
                         out.writeObject(game_played);
+                        
                         
 
                         if(game_played.gameWon == 1 || game_played.gameWon == -1){ //Fixme:  Isn't this condition always true?
                             game_played = new GameState();
+                            break;
                         }
                     }
                 }
@@ -112,7 +125,8 @@ public class Server {
             int g = game.play_round(guess); //makeing a guess on behalf of the client
             game_played.guess = guess;
             game_played.round_outcome = g;
-            
+
+            System.out.println("GUESS OUTCOME: " + g);
             //When a guess has been made
             if(g==1){   //Valid guess 
 
@@ -120,10 +134,15 @@ public class Server {
                 for(int i=0; i<game.round.word_arr.size(); i++){
                     if(guess.equals(game.round.word_arr.get(i))){
                         game_played.word.add(i, guess);
+                        for(String s:game_played.word){
+                            System.out.print(s+" ");
+                        }
+                        System.out.println();
                     }
                 }
 
                 game_played.guesses_left = game.round.guesses;
+                
 
             }else if(g==-1){    //Wasted all the guesses 
                 game_played.guesses_left = game.round.guesses;
