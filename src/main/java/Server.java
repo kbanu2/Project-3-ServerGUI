@@ -101,7 +101,14 @@ public class Server {
                     }
 
                     if (game_played.gameWon == 1 || game_played.gameWon == -1){
+                        String result;
+                        if (game_played.gameWon == 1)
+                            result = "Player '" + username + "' has won their game!";
+                        else
+                            result = "Player '" + username + "' has lost their game!";
+
                         game = new GuessingGame();
+                        callback.accept(result);
                     }
 
                     game_played = new GameState();
